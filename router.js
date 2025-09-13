@@ -3,7 +3,7 @@ import {mainPage} from "./pages/converter/main.js";
 const app = document.getElementById('app');
 
 export function router(){
-    const hash = window.location.hash || '#/home';
+    const hash = window.location.hash || '#/mainPage';
     const parts = hash.slice(2).split('/');
     const route = parts[0];
 
