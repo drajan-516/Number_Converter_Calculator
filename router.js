@@ -1,4 +1,9 @@
-import {mainPage} from "./pages/converter/main.js";
+import {converter} from "./pages/converter/main.js";
+import {mainPage} from "./pages/introduction.js";
+import {addition} from "./pages/calculators/addition.js";
+import {division} from "./pages/calculators/division.js";
+import {subtraction} from "./pages/calculators/subtraction.js";
+import {multiplication} from "./pages/calculators/multiplication.js";
 
 const app = document.getElementById('app');
 
@@ -10,6 +15,21 @@ export function router(){
     switch (route) {
         case 'mainPage':
             mainPage(app);
+            break;
+        case 'converter':
+            converter(app);
+            break;
+        case 'addition':
+            addition(app);
+            break;
+        case 'division':
+            division(app);
+            break;
+        case 'multiplication':
+            multiplication(app);
+            break;
+        case 'subtraction':
+            subtraction(app);
             break;
         default:
             app.innerHTML = `<h2>404 Page Not Found</h2>`;

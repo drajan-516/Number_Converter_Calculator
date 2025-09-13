@@ -1,4 +1,4 @@
-export async function mainPage(app){
+export async function converter(app){
 
     app.innerHTML = `
         <h2>Converter</h2>
@@ -49,5 +49,8 @@ export async function mainPage(app){
         }
 
     }
+
+    //binary system table
+    //about system
 }
 
