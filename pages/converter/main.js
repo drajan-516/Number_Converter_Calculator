@@ -1,7 +1,7 @@
 export async function mainPage(app){
 
     app.innerHTML = `
-        <h2>Calculator</h2>
+        <h2>Converter</h2>
         <header class="main_menu">
         </header>
         <div>
