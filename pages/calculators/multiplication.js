@@ -103,7 +103,7 @@ export async function multiplication(app) {
 
                 <div>
                     <span style="display:inline-block; width:${maxLen}px;">
-                        ${resultNum}<sub>${numSystem}</sub>
+                        ${resultNum}<sub>${10}</sub>
                     </span>
                     =
                     <span style="display:inline-block; width:${maxLen}px;">
