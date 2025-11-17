@@ -28,57 +28,46 @@ export async function addition(app) {
         let y = document.getElementById("y_number").value;
         let numSystem = parseInt(document.getElementById("numSystem_select").value);
 
-        let indexX = parseInt(x, numSystem);
-        let indexY = parseInt(y, numSystem);
+        //let indexX = parseInt(x, numSystem);
+        //let indexY = parseInt(y, numSystem);
         //let result = (indexX + indexY).toString(numSystem).toUpperCase()
 
-        //arr "." base
-        function parseNewArray(str, base) {
-            str = str.replace("-", "");
-
-            return str.split("").map(element => {
-                if (element === ".") return ".";
-
-                let digit = parseInt(element, base);
-
-                if (Number.isNaN(digit)) return console.log("Oups! You did something wrong! Try it again.");
-                return digit;
-            })
+        //chat to num
+        function charToDigit(char) {
+            if (char >= '0' && char <= '9') return parseInt(char);
+            return char.toUpperCase().charCodeAt(0) - 55; // 'A' -> 10
         }
 
-        let numArrX = parseNewArray(x, numSystem);
-        let numArrY = parseNewArray(y, numSystem);
+        // num to char
+        function digitToChar(digit) {
+            if (digit < 10) return digit.toString();
+            return String.fromCharCode(55 + digit); // 10 -> 'A'
+        }
 
-        console.log(numArrX);
-        console.log(numArrY)
+        // [] to string
+        function arrayToBaseString(arr) {
+            return arr.map(digitToChar).join("");
+        }
 
-        //for dots
-        let dotX = numArrX.indexOf("."); let dotY = numArrY.indexOf(".");
+        // splitting
+        function splitNumber(str) {
+            if (!str.includes(".")) str += ".0";
+            let [intPart, fracPart] = str.split(".");
+            return {
+                int: intPart.split("").map(charToDigit),
+                frac: fracPart.split("").map(charToDigit)
+            };
+        }
 
-        let numX = {
-            int:  numArrX.slice(0, dotX),
-            frac: numArrX.slice(dotX + 1)
-        };
-
-        let numY = {
-            int:  numArrY.slice(0, dotY),
-            frac: numArrY.slice(dotY + 1)
-        };
-
+        // a = b
         function alignFractions(a, b) {
             let diff = a.length - b.length;
-
-            if (diff > 0) {
-                b.push(...Array(Math.abs(diff)).fill(0));
-            } else if (diff < 0) {
-                a.push(...Array(Math.abs(diff)).fill(0));
-            }
-
+            if (diff > 0) b.push(...Array(diff).fill(0));
+            if (diff < 0) a.push(...Array(-diff).fill(0));
             return [a, b];
         }
 
-
-
+        // addition
         function addArrays(a, b, base) {
             let carry = 0;
             let result = [];
@@ -88,45 +77,48 @@ export async function addition(app) {
             while (i >= 0 || j >= 0 || carry) {
                 let x = a[i] ?? 0;
                 let y = b[j] ?? 0;
-
                 let sum = x + y + carry;
                 carry = Math.floor(sum / base);
                 sum = sum % base;
-
                 result.push(sum);
-                i--;
-                j--;
+                i--; j--;
             }
 
             return result.reverse();
         }
 
+        // str to []
+        let numX = splitNumber(x);
+        let numY = splitNumber(y);
+
+        // a=b
         [numX.frac, numY.frac] = alignFractions(numX.frac, numY.frac);
+
+        // addition
         let fracSum = addArrays(numX.frac, numY.frac, numSystem);
 
+        // carry
         let carryFromFrac = 0;
         if (fracSum.length > numX.frac.length) {
-            carryFromFrac = fracSum[0];
-            fracSum.shift();
+            carryFromFrac = fracSum.shift();
         }
 
+        // addition
         let intSum = addArrays(numX.int, numY.int, numSystem);
-        if (carryFromFrac > 0) {
-            intSum = addArrays(intSum, [carryFromFrac], numSystem);
-        }
+        if (carryFromFrac) intSum = addArrays(intSum, [carryFromFrac], numSystem);
 
-        let result = intSum.join("") + "." + fracSum.join("");
+        // convert to str
+        let finalResult = arrayToBaseString(intSum) + "." + arrayToBaseString(fracSum);
 
-
-        if (result === "" || result.includes("NaN")) {
+        if (finalResult === "" || finalResult.includes("NaN")) {
             console.log("Oups! You did something wrong! Try it again.");
             document.getElementById("result").textContent = "Oups! You did something wrong! Try it again.";
         } else {
-            console.log(result);
-            document.getElementById("result").textContent = result;
+            console.log(finalResult);
+            document.getElementById("result").textContent = `${finalResult}`;
             document.getElementById("details_text").innerHTML =
-                `${x} + ${y} = ${result}<br>` +
-                `${indexX} + ${indexY} = ${parseInt(result, numSystem).toString(10)}`
+                `${x} + ${y} = ${finalResult}<br>` +
+                `${parseInt(x, numSystem)} + ${parseInt(y, numSystem)} = ${parseInt(intSum.join(""), numSystem)}`;
         }
     }
 }
