@@ -17,7 +17,7 @@ export async function addition(app) {
             </div>
             <button id="resultBtn">Result</button> <p id="result"></p>
             
-            <button class="accordion">More about result...</button>
+           <p>More about result:</p>
             <div class="details">
                 <p id="details_text"></p>
             </div>
