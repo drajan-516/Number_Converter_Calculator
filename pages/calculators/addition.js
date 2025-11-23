@@ -1,6 +1,8 @@
 export async function addition(app) {
     app.innerHTML = `
         <div>
+        <h2>Addition</h2>
+        <h5>supports float numbers</h5>
             <div>
                 <select id="numSystem_select">
                 <option>Choose System</option>
@@ -28,28 +30,20 @@ export async function addition(app) {
         let y = document.getElementById("y_number").value;
         let numSystem = parseInt(document.getElementById("numSystem_select").value);
 
-        //let indexX = parseInt(x, numSystem);
-        //let indexY = parseInt(y, numSystem);
-        //let result = (indexX + indexY).toString(numSystem).toUpperCase()
-
-        //chat to num
         function charToDigit(char) {
             if (char >= '0' && char <= '9') return parseInt(char);
-            return char.toUpperCase().charCodeAt(0) - 55; // 'A' -> 10
+            return char.toUpperCase().charCodeAt(0) - 55;
         }
 
-        // num to char
         function digitToChar(digit) {
             if (digit < 10) return digit.toString();
-            return String.fromCharCode(55 + digit); // 10 -> 'A'
+            return String.fromCharCode(55 + digit);
         }
 
-        // [] to string
         function arrayToBaseString(arr) {
             return arr.map(digitToChar).join("");
         }
 
-        // splitting
         function splitNumber(str) {
             if (!str.includes(".")) str += ".0";
             let [intPart, fracPart] = str.split(".");
@@ -59,7 +53,6 @@ export async function addition(app) {
             };
         }
 
-        // a = b
         function alignFractions(a, b) {
             let diff = a.length - b.length;
             if (diff > 0) b.push(...Array(diff).fill(0));
@@ -87,27 +80,22 @@ export async function addition(app) {
             return result.reverse();
         }
 
-        // str to []
         let numX = splitNumber(x);
         let numY = splitNumber(y);
 
-        // a=b
         [numX.frac, numY.frac] = alignFractions(numX.frac, numY.frac);
 
-        // addition
+
         let fracSum = addArrays(numX.frac, numY.frac, numSystem);
 
-        // carry
         let carryFromFrac = 0;
         if (fracSum.length > numX.frac.length) {
             carryFromFrac = fracSum.shift();
         }
 
-        // addition
         let intSum = addArrays(numX.int, numY.int, numSystem);
         if (carryFromFrac) intSum = addArrays(intSum, [carryFromFrac], numSystem);
 
-        // convert to str
         let finalResult = arrayToBaseString(intSum) + "." + arrayToBaseString(fracSum);
 
         if (finalResult === "" || finalResult.includes("NaN")) {

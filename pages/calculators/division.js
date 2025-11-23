@@ -1,6 +1,8 @@
 export async function division(app) {
     app.innerHTML = `
         <div>
+        <h2>Division</h2>
+        <h5>supports float numbers</h5>
             <div>
                 <select id="numSystem_select">
                 <option>Choose System</option>
@@ -28,20 +30,94 @@ export async function division(app) {
         let y = document.getElementById("y_number").value;
         let numSystem = parseInt(document.getElementById("numSystem_select").value);
 
-        let indexX = parseInt(x, numSystem);
-        let indexY = parseInt(y, numSystem);
+        function charToDigit(char) {
+            if (char >= '0' && char <= '9') return parseInt(char);
+            return char.toUpperCase().charCodeAt(0) - 55;
+        }
 
-        let result = (indexX - indexY).toString(numSystem).toUpperCase()
+        function digitToChar(digit) {
+            if (digit < 10) return digit.toString();
+            return String.fromCharCode(55 + digit);
+        }
 
-        if (result === "NaN") {
+        function arrayToBaseString(arr) {
+            return arr.map(digitToChar).join("");
+        }
+
+        function splitNumber(str) {
+            if (!str.includes(".")) str += ".0";
+            let [intPart, fracPart] = str.split(".");
+            return {
+                int: intPart.split("").map(charToDigit),
+                frac: fracPart.split("").map(charToDigit)
+            };
+        }
+
+        function alignFractions(a, b) {
+            let diff = a.length - b.length;
+            if (diff > 0) b.push(...Array(diff).fill(0));
+            if (diff < 0) a.push(...Array(-diff).fill(0));
+            return [a, b];
+        }
+
+        function subtractArrays(a, b, base) {
+            let result = [];
+            let borrow = 0;
+            let i = a.length - 1;
+            let j = b.length - 1;
+
+            while (i >= 0 || j >= 0) {
+                let x = a[i] ?? 0;
+                let y = b[j] ?? 0;
+                let diff = x - y;
+
+                if (diff < 0) {
+                    diff += base;
+                    borrow = 1;
+                } else {
+                    borrow = 0;
+                }
+
+                result.push(diff);
+                i--; j--;
+            }
+
+            while (result.length > 1 && result[result.length - 1] === 0) {
+                result.pop();
+            }
+
+            return result.reverse();
+        }
+
+        let numX = splitNumber(x);
+        let numY = splitNumber(y);
+
+        [numX.frac, numY.frac] = alignFractions(numX.frac, numY.frac);
+
+        let fracDiff = subtractArrays(numX.frac, numY.frac, numSystem);
+
+        let borrowFromFrac = 0;
+        if (fracDiff.length < numX.frac.length) {
+            borrowFromFrac = 1;
+        }
+
+        let intDiff = subtractArrays(numX.int, numY.int, numSystem);
+
+        if (borrowFromFrac) {
+            intDiff = subtractArrays(intDiff, [1], numSystem);
+        }
+
+        let finalResult = arrayToBaseString(intDiff) + "." + arrayToBaseString(fracDiff);
+
+        if (finalResult === "" || finalResult.includes("NaN")) {
             console.log("Oups! You did something wrong! Try it again.");
             document.getElementById("result").textContent = "Oups! You did something wrong! Try it again.";
         } else {
-            console.log(result);
-            document.getElementById("result").textContent = result;
+            console.log(finalResult);
+            document.getElementById("result").textContent = `${finalResult}`;
             document.getElementById("details_text").innerHTML =
-                `${x} - ${y} = ${result}<br>` +
-                `${indexX} - ${indexY} = ${parseInt(result, numSystem).toString(10)}`
+                `${x} - ${y} = ${finalResult}<br>` +
+                `${parseInt(x, numSystem)} - ${parseInt(y, numSystem)} = ${parseInt(intDiff.join(""), numSystem)}`;
         }
     }
 }

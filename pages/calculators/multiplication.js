@@ -1,6 +1,7 @@
 export async function multiplication(app) {
     app.innerHTML = `
         <div>
+        <h2>Multiplication</h2>
             <div>
                 <select id="numSystem_select">
                 <option>Choose System</option>

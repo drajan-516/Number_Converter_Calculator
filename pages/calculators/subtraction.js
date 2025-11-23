@@ -1,6 +1,7 @@
 export async function subtraction(app) {
     app.innerHTML = `
         <div>
+        <h2>Substraction</h2>
             <div>
                 <select id="numSystem_select">
                 <option>Choose System</option>
